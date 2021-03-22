@@ -37,17 +37,24 @@ const Dashboard: React.FC = () => {
     async function loadTransactions(): Promise<void> {
       const response = await api.get(`transactions`);
 
-      const transactionsFormatted = response.data.transactions.map((transaction: Transaction) => ({
-        ...transaction,
-        formattedValue: transaction.type === 'income' ? formatValue(transaction.value) : `- ${formatValue(transaction.value)}`,
-        formattedDate: new Date(transaction.created_at).toLocaleDateString('pt-br')
-      }));
+      const transactionsFormatted = response.data.transactions.map(
+        (transaction: Transaction) => ({
+          ...transaction,
+          formattedValue:
+            transaction.type === 'income'
+              ? formatValue(transaction.value)
+              : `- ${formatValue(transaction.value)}`,
+          formattedDate: new Date(transaction.created_at).toLocaleDateString(
+            'pt-br',
+          ),
+        }),
+      );
 
       const balanceFormatted = {
         income: formatValue(response.data.balance.income),
         outcome: formatValue(response.data.balance.outcome),
         total: formatValue(response.data.balance.total),
-      }
+      };
 
       setBalance(balanceFormatted);
       setTransactions(transactionsFormatted);
@@ -84,7 +91,7 @@ const Dashboard: React.FC = () => {
           </Card>
         </CardContainer>
 
-        { transactions && (
+        {transactions && (
           <TableContainer>
             <table>
               <thead>
@@ -95,12 +102,14 @@ const Dashboard: React.FC = () => {
                   <th>Data</th>
                 </tr>
               </thead>
-              { transactions && (
+              {transactions && (
                 <tbody>
                   {transactions.map(transaction => (
-                    <tr>
+                    <tr key={transaction.id}>
                       <td className="title">{transaction.title}</td>
-                      <td className={transaction.type}>{transaction.formattedValue}</td>
+                      <td className={transaction.type}>
+                        {transaction.formattedValue}
+                      </td>
                       <td>{transaction.category.title}</td>
                       <td>{transaction.formattedDate}</td>
                     </tr>
@@ -109,8 +118,7 @@ const Dashboard: React.FC = () => {
               )}
             </table>
           </TableContainer>
-          )}
-
+        )}
       </Container>
     </>
   );
